@@ -1,0 +1,310 @@
+{
+  "fabricante": [
+    {
+      "id": 1,
+      "nome": "fabricante Silva",
+      "telefone": "81990000001",
+      "instagram": "@tecidossilva",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Venda de tecidos jeans e brim",
+      "media": 4.5
+    },
+    {
+      "id": 2,
+      "nome": "Casa do fabricante",
+      "telefone": "81990000002",
+      "instagram": "@casadotecido",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Tecidos variados para confecção",
+      "media": 0
+    }
+  ],
+  "facção": [
+    {
+      "id": 1,
+      "nome": "facção Silva",
+      "telefone": "81990000001",
+      "instagram": "@tecidossilva",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Venda de tecidos jeans e brim",
+      "media": 0
+    },
+    {
+      "id": 2,
+      "nome": "Casa da facção",
+      "telefone": "81990000002",
+      "instagram": "@casadotecido",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Tecidos variados para confecção",
+      "media": 0
+    }
+  ],
+  "tecido": [
+    {
+      "id": 1,
+      "nome": "Tecidos Silva",
+      "telefone": "81990000001",
+      "instagram": "@tecidossilva",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Venda de tecidos jeans e brim",
+      "media": 0
+    },
+    {
+      "id": 2,
+      "nome": "Casa do Tecido",
+      "telefone": "81990000002",
+      "instagram": "@casadotecido",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Tecidos variados para confecção",
+      "media": 0
+    }
+  ],
+  "modelagem": [
+    {
+      "id": 3,
+      "nome": "Modelagem Pro",
+      "telefone": "81990000003",
+      "instagram": "@modelagempro",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Modelagem profissional jeans",
+      "media": 0
+    },
+    {
+      "id": 4,
+      "nome": "Maria Modelista",
+      "telefone": "81990000004",
+      "instagram": "@mariamodelagem",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Modelagem feminina e infantil",
+      "media": 0
+    }
+  ],
+  "corte": [
+    {
+      "id": 5,
+      "nome": "Corte Rápido",
+      "telefone": "81990000005",
+      "instagram": "@corterapido",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Corte em grande escala",
+      "media": 0
+    },
+    {
+      "id": 6,
+      "nome": "João do Corte",
+      "telefone": "81990000006",
+      "instagram": "@joaocorte",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Especialista em jeans",
+      "media": 0
+    }
+  ],
+  "frente": [
+    {
+      "id": 7,
+      "nome": "Frente Express",
+      "telefone": "81990000007",
+      "instagram": "@frenteexpress",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Montagem de frente rápida",
+      "media": 0
+    },
+    {
+      "id": 8,
+      "nome": "Costura Frente",
+      "telefone": "81990000008",
+      "instagram": "@costurafrente",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Frente de calça jeans",
+      "media": 0
+    }
+  ],
+  "traseira": [
+    {
+      "id": 9,
+      "nome": "Traseira Top",
+      "telefone": "81990000009",
+      "instagram": "@traseiratop",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Costura traseira profissional",
+      "media": 0
+    },
+    {
+      "id": 10,
+      "nome": "Jeans Traseira",
+      "telefone": "81990000010",
+      "instagram": "@jeanstraseira",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Especialista em traseira jeans",
+      "media": 0
+    }
+  ],
+  "bolso": [
+    {
+      "id": 11,
+      "nome": "Bolso Perfeito",
+      "telefone": "81990000011",
+      "instagram": "@bolsoperfeito",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Aplicação de bolso",
+      "media": 0
+    },
+    {
+      "id": 12,
+      "nome": "Bolso Rápido",
+      "telefone": "81990000012",
+      "instagram": "@bolsorapido",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Serviço rápido de bolso",
+      "media": 0
+    }
+  ],
+  "travete": [
+    {
+      "id": 13,
+      "nome": "Travete Forte",
+      "telefone": "81990000013",
+      "instagram": "@traveteforte",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Travete reforçado",
+      "media": 0
+    },
+    {
+      "id": 14,
+      "nome": "Travete Express",
+      "telefone": "81990000014",
+      "instagram": "@traveteexpress",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Alta produção",
+      "media": 0
+    }
+  ],
+  "caseado": [
+    {
+      "id": 15,
+      "nome": "Caseado Premium",
+      "telefone": "81990000015",
+      "instagram": "@caseadopremium",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Caseado de alta qualidade",
+      "media": 0
+    },
+    {
+      "id": 16,
+      "nome": "Caseado Rápido",
+      "telefone": "81990000016",
+      "instagram": "@caseadorapido",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Serviço rápido",
+      "media": 0
+    }
+  ],
+  "cabecinha": [
+    {
+      "id": 17,
+      "nome": "Cabecinha Jeans",
+      "telefone": "81990000017",
+      "instagram": "@cabecinhajeans",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Acabamento de botão",
+      "media": 0
+    },
+    {
+      "id": 18,
+      "nome": "Botão Top",
+      "telefone": "81990000018",
+      "instagram": "@botaotop",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Cabecinha profissional",
+      "media": 4.3
+    }
+  ],
+  "elastico": [
+    {
+      "id": 19,
+      "nome": "Elástico Flex",
+      "telefone": "81990000019",
+      "instagram": "@elasticoflex",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Aplicação de elástico",
+      "media": 0
+    },
+    {
+      "id": 20,
+      "nome": "Elástico Rápido",
+      "telefone": "81990000020",
+      "instagram": "@elasticorapido",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Alta produção",
+      "media": 0
+    }
+  ],
+  "pelo": [
+    {
+      "id": 21,
+      "nome": "Pelo Jeans",
+      "telefone": "81990000021",
+      "instagram": "@pelojeans",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Acabamento de pelos",
+      "media": 0
+    },
+    {
+      "id": 22,
+      "nome": "Acabamento Pelo",
+      "telefone": "81990000022",
+      "instagram": "@acabamentopelo",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Limpeza de peças",
+      "media": 0
+    }
+  ],
+  "aprontamento": [
+    {
+      "id": 23,
+      "nome": "Apronto Final",
+      "telefone": "81990000023",
+      "instagram": "@aprontofinal",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Finalização de peças",
+      "media": 0
+    },
+    {
+      "id": 24,
+      "nome": "Acabamento Total",
+      "telefone": "81990000024",
+      "instagram": "@acabamentototal",
+      "endereco": "Caruaru - PE",
+      "bairro": "salgado",
+      "descricao": "Aprontamento completo",
+      "media": 0
+    }
+  ]
+}
