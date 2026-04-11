@@ -39,22 +39,22 @@ function addProvider(data, service, provider) {
 function seed() {
   const data = loadData();
 
-  addProvider(data, "corte", {
-    nome: "Novo Corte Premium",
-    telefone: "81991111111",
-    instagram: "@cortepremium",
-    endereco: "Caruaru - PE",
-    bairro: "salgado",
-    descricao: "Corte profissional jeans"
+  addProvider(data, "fabricante", {
+    nome: "Cilmara",
+    telefone: "81991257099",
+    instagram: "",
+    endereco: "",
+    bairro: "riachao",
+    descricao: "Fabricante de Jeans"
   });
 
-  addProvider(data, "modelagem", {
-    nome: "Top Modelagem",
-    telefone: "81992222222",
-    instagram: "@topmodelagem",
-    endereco: "Caruaru - PE",
-    bairro: "salgado",
-    descricao: "Modelagem avançada"
+  addProvider(data, "frete", {
+    nome: "frank - frete",
+    telefone: "81992155410",
+    instagram: "",
+    endereco: "",
+    bairro: "riachao",
+    descricao: "Frete para Cortes, peças, facção, lavanderia, transportadora, etc"
   });
 
   saveData(data);
