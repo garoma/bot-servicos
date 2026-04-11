@@ -40,8 +40,23 @@ function getQuantidadeAvaliacoes(providerId) {
   return ratings.filter(r => r.providerId === providerId).length;
 }
 
+function getMediaAvaliacoes(providerId) {
+  const ratings = getRatings();
+
+  const notas = ratings
+    .filter(r => r.providerId === providerId)
+    .map(r => r.nota);
+
+  if (!notas.length) return 0;
+
+  const soma = notas.reduce((acc, n) => acc + n, 0);
+
+  return soma / notas.length;
+}
+
 module.exports = {
   salvarAvaliacao,
   podeAvaliar,
-  getQuantidadeAvaliacoes
+  getQuantidadeAvaliacoes,
+  getMediaAvaliacoes
 };
