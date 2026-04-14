@@ -13,9 +13,10 @@ module.exports = async (client, message) => {
   }
 
   const estado = estados[user];
+  const saudacoes = ["oi","ola","olá","bom dia","boa tarde","boa noite"];
 
   // MENU
-  if (text === "/menu") {
+  if (text === "/menu" || saudacoes.some(s => textoNormalizado.includes(s))){
     if (text === "/menu") {
       const services = serviceService.getAllServices();
 
