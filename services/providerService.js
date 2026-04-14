@@ -12,6 +12,13 @@ function getProvidersByService(service) {
   const data = getData();
   const providers = data[service] || [];
 
+  // 🔥 FILTRO POR BAIRRO
+  if (bairro && bairro !== "todos") {
+    providers = providers.filter(p =>
+      p.bairro.toLowerCase().includes(bairro.toLowerCase())
+    );
+  }
+  
   const lista = providers.map(p => {
     const media = ratingService.getMediaAvaliacoes(p.id);
 
