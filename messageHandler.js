@@ -35,8 +35,8 @@ module.exports = async (client, message) => {
       msg += `${i + 1} - ${s}\n`;
     });
 
-    msg += "\nDigite o número do serviço:\n";
-    msg += "0 - Cadastrar meu serviço\n";
+    msg += "\nDigite o número do serviço:\n\n";
+    msg += "Digite *0* - Cadastrar meu serviço\n";
 
     estado.etapa = "escolhendo_servico";
 

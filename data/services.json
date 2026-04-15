@@ -1,28 +1,9 @@
 {
-  "fabricante": [
-    {
-      "nome": "Cilmara",
-      "telefone": "81991257099",
-      "instagram": "",
-      "bairro": "riachao",
-      "descricao": "Fabricante de Jeans",
-      "id": 1,
-      "media": 0
-    }
-  ],
+  "fabricante": [],
   "faccao": [],
   "lavanderia": [],
-  "frete": [
-    {
-      "nome": "frank - frete",
-      "telefone": "81992155410",
-      "instagram": "",
-      "bairro": "riachao",
-      "descricao": "Frete para Cortes, peças, facção, lavanderia, transportadora, etc",
-      "id": 2,
-      "media": 0
-    }
-  ],
+  "estamparia": [],
+  "frete": [],
   "costureiras": [],
   "modelagem": [],
   "corte jeans": [],
