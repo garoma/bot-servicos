@@ -64,3 +64,9 @@ Thumbs.db
 # ============================
 uploads/
 media/
+
+# ============================
+# Arquivo de dados gerado em producao
+# ============================
+storage/leads.json
+data/services.json
