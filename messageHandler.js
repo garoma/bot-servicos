@@ -12,6 +12,16 @@ function normalizar(texto) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+function gerarLinkWhatsApp(telefone, nomePrestador, servico) {
+  const numero = telefone.replace(/\D/g, ""); // remove espaços, -, etc
+
+  const mensagem = encodeURIComponent(
+    `Olá ${nomePrestador}, encontrei você pelo chatbot de serviços de Caruaru.\nEstou interessado em *${servico}*. Pode me passar mais informações?`
+  );
+
+  return `https://wa.me/55${numero}?text=${mensagem}`;
+}
+
 module.exports = async (client, message) => {
   const user = message.from;
   const text = message.body.trim();
@@ -147,11 +157,13 @@ module.exports = async (client, message) => {
     let msg = `🧵 *${estado.servico.toUpperCase()}*\n`;
     msg += `📍 Bairro: ${bairroOriginal}\n\n`;
 
+    const link = gerarLinkWhatsApp(p.telefone, p.nome, estado.servico);
+
     providers.forEach((p, i) => {
       const total = ratingService.getQuantidadeAvaliacoes(p.id);
 
       msg += `${i + 1} - ${p.nome}
-  📞 ${p.telefone}
+  📞 ${link}
   📍 ${p.bairro}
   ⭐ ${p.media ? p.media.toFixed(1) : "0.0"} (${total} avaliações)
 
