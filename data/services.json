@@ -1,5 +1,15 @@
 {
-  "fabricante": [],
+  "fabricante": [
+    {
+      "nome": "cilmara",
+      "telefone": "81991257099]",
+      "instagram": "...",
+      "bairro": "salgado",
+      "descricao": "",
+      "id": 1,
+      "media": 0
+    }
+  ],
   "faccao": [],
   "lavanderia": [],
   "estamparia": [],
