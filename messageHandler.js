@@ -1,6 +1,7 @@
 const serviceService = require("./services/serviceService");
 const providerService = require("./services/providerService");
 const ratingService = require("./services/ratingService");
+const leadService = require("./services/leadService");
 
 const estados = {};
 
@@ -72,6 +73,11 @@ module.exports = async (client, message) => {
     estado.servico = services[index];
     estado.etapa = "filtro_bairro";
 
+    leadService.salvarLead({
+      user,
+      servico: estado.servico
+    });
+
     return message.reply(
       "📍 Digite o bairro que deseja buscar\n\nOu digite *TODOS*:"
     );
@@ -81,7 +87,20 @@ module.exports = async (client, message) => {
   // FILTRO POR BAIRRO
   // =========================
   if (estado.etapa === "filtro_bairro") {
+    const bairroOriginal = text;
     const bairro = normalizar(text);
+
+    // ✅ salvar no estado (IMPORTANTE)
+    estado.bairro = bairro;
+
+    // 🔥 salvar lead
+    const leadService = require("./services/leadService");
+
+    leadService.salvarLead({
+      user,
+      servico: estado.servico,
+      bairro: bairroOriginal
+    });
 
     const providers = providerService.getProvidersByService(
       estado.servico,
@@ -94,18 +113,17 @@ module.exports = async (client, message) => {
     }
 
     let msg = `🧵 *${estado.servico.toUpperCase()}*\n`;
-    msg += `📍 Bairro: ${text}\n\n`;
+    msg += `📍 Bairro: ${bairroOriginal}\n\n`;
 
     providers.forEach((p, i) => {
       const total = ratingService.getQuantidadeAvaliacoes(p.id);
 
       msg += `${i + 1} - ${p.nome}
-📞 ${p.telefone}
-📍 ${p.bairro}
-📸 ${p.instagram}
-⭐ ${p.media ? p.media.toFixed(1) : "0.0"} (${total} avaliações)
+  📞 ${p.telefone}
+  📍 ${p.bairro}
+  ⭐ ${p.media ? p.media.toFixed(1) : "0.0"} (${total} avaliações)
 
-`;
+  `;
     });
 
     msg += "Digite:\n";
@@ -230,19 +248,19 @@ module.exports = async (client, message) => {
   if (estado.etapa === "cad_telefone") {
     estado.novo.telefone = message.body;
 
-    estado.etapa = "cad_instagram";
-    return message.reply("Digite seu Instagram:");
+    estado.etapa = "cad_bairro";
+    return message.reply("Digite seu bairro:");
   }
 
   // =========================
   // CADASTRO - INSTAGRAM
   // =========================
-  if (estado.etapa === "cad_instagram") {
-    estado.novo.instagram = message.body;
+  // if (estado.etapa === "cad_instagram") {
+  //   estado.novo.instagram = message.body;
 
-    estado.etapa = "cad_bairro";
-    return message.reply("Digite seu bairro:");
-  }
+  //   estado.etapa = "cad_bairro";
+  //   return message.reply("Digite seu bairro:");
+  // }
 
   // =========================
   // CADASTRO - BAIRRO
@@ -255,7 +273,7 @@ module.exports = async (client, message) => {
       {
         nome: estado.novo.nome,
         telefone: estado.novo.telefone,
-        instagram: estado.novo.instagram,
+        //instagram: estado.novo.instagram,
         bairro: estado.novo.bairro,
         descricao: ""
       }
