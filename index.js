@@ -1,6 +1,7 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const handleMessage = require("./messageHandler");
+const { isGroupMessage, isBotMessage } = require('./regras');
 
 const client = new Client({
   authStrategy: new LocalAuth(), // 👈 ISSO AQUI É O SEGREDO
@@ -16,7 +17,13 @@ client.on("ready", () => {
 
 client.on("message", async (message) => {
   console.log(`📩 Mensagem recebida de ${message.from}: ${message.body}`);
+ 
+  if (message.fromMe) return;
+  if (isGroupMessage(message)) return;
+  if (isBotMessage(message)) return;
+  if (message.from.endsWith('@broadcast')) return;
+
   await handleMessage(client, message);
 });
 
-client.initialize(); 0
+client.initialize();
