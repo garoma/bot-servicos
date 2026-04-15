@@ -27,7 +27,7 @@ module.exports = async (client, message) => {
   // MENU
   // =========================
   const saudacoes = ["oi", "ola", "bom dia", "boa tarde", "boa noite"];
-  if (text === "/menu" || saudacoes.some(s => textoNormalizado.includes(s))) {
+  if (text === "/menu" || saudacoes.includes(textoNormalizado)) {
     const services = serviceService.getAllServices();
 
     let msg = "📋 *Serviços disponíveis:*\n\n";
