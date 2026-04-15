@@ -22,11 +22,11 @@ module.exports = async (client, message) => {
   }
 
   const estado = estados[user];
-  const saudacoes = ["oi", "ola", "bom dia", "boa tarde", "boa noite"];
 
   // =========================
   // MENU
   // =========================
+  const saudacoes = ["oi", "ola", "bom dia", "boa tarde", "boa noite"];
   if (text === "/menu" || saudacoes.some(s => textoNormalizado.includes(s))) {
     const services = serviceService.getAllServices();
 
@@ -40,6 +40,28 @@ module.exports = async (client, message) => {
     msg += "Digite *0* - Cadastrar meu serviço\n";
 
     estado.etapa = "escolhendo_servico";
+
+    return message.reply(msg);
+  }
+
+  // =========================
+  // SAIR (GLOBAL)
+  // =========================
+  const comandosSair = ["sair", "cancelar", "voltar", "menu"];
+
+  if (comandosSair.includes(textoNormalizado)) {
+    estado.etapa = "menu";
+
+    const services = serviceService.getAllServices();
+
+    let msg = "📋 *Serviços disponíveis:*\n\n";
+
+    services.forEach((s, i) => {
+      msg += `${i + 1} - ${s}\n`;
+    });
+
+    msg += "\nDigite o número do serviço:\n";
+    msg += "0 - Cadastrar meu serviço\n";
 
     return message.reply(msg);
   }
@@ -73,10 +95,10 @@ module.exports = async (client, message) => {
     estado.servico = services[index];
     estado.etapa = "filtro_bairro";
 
-    leadService.salvarLead({
-      user,
-      servico: estado.servico
-    });
+    // leadService.salvarLead({
+    //   user,
+    //   servico: estado.servico
+    // });
 
     return message.reply(
       "📍 Digite o bairro que deseja buscar\n\nOu digite *TODOS*:"
