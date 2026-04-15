@@ -22,6 +22,16 @@ function gerarLinkWhatsApp(telefone, nomePrestador, servico) {
   return `https://wa.me/55${numero}?text=${mensagem}`;
 }
 
+function gerarLinkSuporte() {
+  const numero = "5581992155410";
+
+  const mensagem = encodeURIComponent(
+    "Olá, vim pelo chatbot de serviços de Caruaru e preciso de ajuda."
+  );
+
+  return `https://wa.me/${numero}?text=${mensagem}`;
+}
+
 module.exports = async (client, message) => {
   const user = message.from;
   const text = message.body.trim();
@@ -52,6 +62,7 @@ module.exports = async (client, message) => {
 
     msg += "\nDigite o número do serviço:\n\n";
     msg += "Digite *0* - Cadastrar meu serviço\n";
+    msg += "*duvida* - Suporte / Dúvidas\n";
     msg += "*sair* - Retorna ao Menu\n";
 
     estado.etapa = "escolhendo_servico";
@@ -77,6 +88,7 @@ module.exports = async (client, message) => {
 
     msg += "\nDigite o número do serviço:\n";
     msg += "*0* - Cadastrar meu serviço\n";
+    msg += "*duvida* - Suporte / Dúvidas\n";
     msg += "*sair* - Retorna ao Menu\n";
 
     return message.reply(msg);
@@ -90,6 +102,14 @@ module.exports = async (client, message) => {
   // ESCOLHER SERVIÇO
   // =========================
   if (estado.etapa === "escolhendo_servico") {
+
+    if (text === "duvida") {
+      const link = gerarLinkSuporte();
+
+      return message.reply(
+        `💬 *Suporte*\n\nClique abaixo para falar direto no WhatsApp:\n${link}`
+      );
+    }
 
     // 👉 CADASTRO
     if (text === "0") {
