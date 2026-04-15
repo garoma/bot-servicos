@@ -27,7 +27,11 @@ module.exports = async (client, message) => {
   // MENU
   // =========================
   const saudacoes = ["oi", "ola", "bom dia", "boa tarde", "boa noite"];
-  if (text === "/menu" || saudacoes.includes(textoNormalizado)) {
+  if (
+      text === "/menu" ||
+      saudacoes.includes(textoNormalizado) ||
+      estado.etapa === "menu") 
+    {
     const services = serviceService.getAllServices();
 
     let msg = "📋 *Serviços disponíveis:*\n\n";
@@ -38,6 +42,7 @@ module.exports = async (client, message) => {
 
     msg += "\nDigite o número do serviço:\n\n";
     msg += "Digite *0* - Cadastrar meu serviço\n";
+    msg += "*sair* - Retorna ao Menu\n";
 
     estado.etapa = "escolhendo_servico";
 
@@ -61,10 +66,15 @@ module.exports = async (client, message) => {
     });
 
     msg += "\nDigite o número do serviço:\n";
-    msg += "0 - Cadastrar meu serviço\n";
+    msg += "*0* - Cadastrar meu serviço\n";
+    msg += "*sair* - Retorna ao Menu\n";
 
     return message.reply(msg);
   }
+
+  console.log("USER:", user);
+  console.log("ETAPA:", estado.etapa);
+  console.log("MSG:", text);
 
   // =========================
   // ESCOLHER SERVIÇO
