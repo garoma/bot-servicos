@@ -43,6 +43,10 @@ module.exports = async (client, message) => {
 
   const estado = estados[user];
 
+  console.log("USER:", user);
+  console.log("ETAPA:", estado.etapa);
+  console.log("MSG:", text);
+
   // =========================
   // MENU
   // =========================
@@ -93,10 +97,6 @@ module.exports = async (client, message) => {
 
     return message.reply(msg);
   }
-
-  console.log("USER:", user);
-  console.log("ETAPA:", estado.etapa);
-  console.log("MSG:", text);
 
   // =========================
   // ESCOLHER SERVIÇO
@@ -156,7 +156,7 @@ module.exports = async (client, message) => {
     estado.bairro = bairro;
 
     // 🔥 salvar lead
-    const leadService = require("./services/leadService");
+    //const leadService = require("./services/leadService");
 
     leadService.salvarLead({
       user,
@@ -176,8 +176,6 @@ module.exports = async (client, message) => {
 
     let msg = `🧵 *${estado.servico.toUpperCase()}*\n`;
     msg += `📍 Bairro: ${bairroOriginal}\n\n`;
-
-    const link = gerarLinkWhatsApp(p.telefone, p.nome, estado.servico);
 
     providers.forEach((p, i) => {
       const total = ratingService.getQuantidadeAvaliacoes(p.id);
