@@ -181,7 +181,7 @@ module.exports = async (client, message) => {
 
     providers.forEach((p, i) => {
       const total = ratingService.getQuantidadeAvaliacoes(p.id);
-
+      const link = gerarLinkWhatsApp(p.telefone, p.nome, estado.servico);
       msg += `${i + 1} - ${p.nome}
   📞 ${link}
   📍 ${p.bairro}
