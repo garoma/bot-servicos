@@ -20,6 +20,13 @@ function normalizar(texto) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+function existeProvider(lista, novo) {
+  return lista.find(p =>
+    //p.nome.toLowerCase() === novo.nome.toLowerCase() &&
+    p.telefone === novo.telefone
+  );
+}
+
 // =========================
 // BUSCAR PRESTADORES
 // =========================
@@ -59,14 +66,12 @@ function salvarProvider(service, provider) {
   }
 
   // 🚨 EVITAR DUPLICADO (telefone)
-  const existe = data[service].find(p =>
-    p.telefone === provider.telefone
-  );
+  const providers = data[service] || [];
 
-  if (existe) {
+  if (existeProvider(providers, provider)) {
     return {
       erro: true,
-      mensagem: "⚠️ Já existe cadastro com esse telefone"
+      mensagem: "⚠️ Já existe um cadastro com esse telefone"
     };
   }
 
