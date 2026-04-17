@@ -5,48 +5,86 @@ const leadService = require("./services/leadService");
 
 const estados = {};
 
-function normalizar(texto) {
+// ====================================
+// UTIL
+// ====================================
+function normalizar(texto = "") {
   return texto
     .toLowerCase()
+    .trim()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function gerarLinkWhatsApp(telefone, nomePrestador, servico) {
+function gerarLinkWhatsApp(telefone, nome) {
   const numero = telefone.replace(/\D/g, "");
 
   const mensagem = encodeURIComponent(
-    `chatBot.caruaru.servicos. Olá ${nomePrestador}.`
+    `Olá ${nome}, encontrei seu contato pelo ChatBot de Serviços de Caruaru.`
   );
 
   return `https://wa.me/55${numero}?text=${mensagem}`;
 }
 
 function gerarLinkSuporte() {
-  const numero = "5581992155410";
-
-  const mensagem = encodeURIComponent(
-    "Olá, vim pelo chatbot de serviços de Caruaru e preciso de ajuda."
-  );
-
-  return `https://wa.me/${numero}?text=${mensagem}`;
+  return "https://wa.me/5581992155410";
 }
 
-// 🔥 PAGINAÇÃO
 function listarPagina(estado) {
   const inicio = estado.pagina * 5;
   const fim = inicio + 5;
   return estado.providers.slice(inicio, fim);
 }
 
+function detectarServico(texto) {
+  const services = serviceService.getAllServices();
+  const t = normalizar(texto);
+
+  return services.find((s) => t.includes(normalizar(s)));
+}
+
+function menuPrincipal() {
+  return `
+👋 Olá! Sou o assistente virtual do *ChatBot de Serviços de Caruaru*.
+
+Como posso ajudar?
+
+🔎 Buscar serviço
+📝 Me cadastrar
+⭐ Avaliar prestador
+📋 Ver serviços
+💬 Suporte
+
+Digite normalmente 😊
+Ex: "quero frete"
+`;
+}
+
+function listarServicosTexto() {
+  const services = serviceService.getAllServices();
+
+  let msg = "📋 *Serviços disponíveis:*\n\n";
+
+  services.forEach((s) => {
+    msg += `• ${s}\n`;
+  });
+
+  msg += "\nDigite o nome do serviço desejado.";
+
+  return msg;
+}
+
+// ====================================
+// HANDLER
+// ====================================
 module.exports = async (client, message) => {
   try {
     const user = message.from;
     const text = message.body.trim();
-    const textoNormalizado = normalizar(text);
+    const texto = normalizar(text);
 
     if (!estados[user]) {
-      estados[user] = { etapa: "menu" };
+      estados[user] = { etapa: "inicio" };
     }
 
     const estado = estados[user];
@@ -55,87 +93,91 @@ module.exports = async (client, message) => {
     console.log("ETAPA:", estado.etapa);
     console.log("MSG:", text);
 
-    // =========================
-    // MENU
-    // =========================
-    const saudacoes = ["oi", "ola", "bom dia", "boa tarde", "boa noite"];
+    // ====================================
+    // COMANDOS GLOBAIS
+    // ====================================
+    const gatilhosMenu = [
+      "oi",
+      "ola",
+      "bom dia",
+      "boa tarde",
+      "boa noite",
+      "menu",
+      "/menu",
+      "inicio",
+      "sair",
+      "voltar",
+      "cancelar"
+    ];
 
-    if (
-      text === "/menu" ||
-      saudacoes.includes(textoNormalizado) ||
-      estado.etapa === "menu"
-    ) {
-      const services = serviceService.getAllServices();
-
-      let msg = "📋 *Serviços disponíveis:*\n\n";
-
-      services.forEach((s, i) => {
-        msg += `${i + 1} - ${s}\n`;
-      });
-
-      msg += "\nDigite o número do serviço:\n\n";
-      msg += "0 - Cadastrar meu serviço\n";
-      msg += "duvida - Suporte\n";
-      msg += "sair - Menu\n";
-
-      estado.etapa = "escolhendo_servico";
-
-      return message.reply(msg);
+    if (gatilhosMenu.includes(texto)) {
+      estado.etapa = "inicio";
+      return message.reply(menuPrincipal());
     }
 
-    // =========================
-    // SAIR GLOBAL
-    // =========================
-    const comandosSair = ["sair", "cancelar", "voltar"];
-
-    if (comandosSair.includes(textoNormalizado)) {
-      estado.etapa = "menu";
-      return message.reply("Digite /menu");
-    }
-
-    // =========================
-    // ESCOLHER SERVIÇO
-    // =========================
-    if (estado.etapa === "escolhendo_servico") {
-      if (textoNormalizado === "duvida") {
-        const link = gerarLinkSuporte();
-
+    // ====================================
+    // ETAPA INICIAL
+    // ====================================
+    if (estado.etapa === "inicio") {
+      // suporte
+      if (
+        texto.includes("suporte") ||
+        texto.includes("duvida") ||
+        texto.includes("ajuda")
+      ) {
         return message.reply(
-          `💬 *Suporte*\n\nFale conosco:\n${link}`
+          `💬 Fale conosco:\n${gerarLinkSuporte()}`
         );
       }
 
-      if (text === "0") {
-        const services = serviceService.getAllServices();
-
-        let msg = "Qual serviço você presta?\n\n";
-
-        services.forEach((s, i) => {
-          msg += `${i + 1} - ${s}\n`;
-        });
-
+      // cadastro
+      if (
+        texto.includes("cadastro") ||
+        texto.includes("cadastrar") ||
+        texto.includes("me cadastrar")
+      ) {
         estado.etapa = "cad_servico";
-        return message.reply(msg);
+        return message.reply(
+          "📝 Vamos cadastrar você.\n\nQual serviço você presta?\n\n" +
+          listarServicosTexto()
+        );
       }
 
-      const services = serviceService.getAllServices();
-      const index = parseInt(text) - 1;
-
-      if (!services[index]) {
-        return message.reply("❌ Serviço inválido");
+      // avaliar
+      if (texto.includes("avaliar")) {
+        estado.etapa = "avaliar_busca";
+        return message.reply(
+          "⭐ Qual serviço do prestador que deseja avaliar?\nEx: fabricante, frete..."
+        );
       }
 
-      estado.servico = services[index];
-      estado.etapa = "filtro_bairro";
+      // ver lista
+      if (
+        texto.includes("lista") ||
+        texto.includes("servicos") ||
+        texto.includes("categorias")
+      ) {
+        return message.reply(listarServicosTexto());
+      }
 
-      return message.reply(
-        "📍 Digite o bairro ou *TODOS*:"
-      );
+      // detectar serviço direto
+      const servicoDetectado = detectarServico(texto);
+
+      if (servicoDetectado) {
+        estado.servico = servicoDetectado;
+        estado.etapa = "filtro_bairro";
+
+        return message.reply(
+          `🔎 Você procura *${servicoDetectado}*.\n\nDigite o bairro desejado ou *todos*.`
+        );
+      }
+
+      return message.reply(menuPrincipal());
     }
 
-    // =========================
+    // ====================================
     // FILTRO BAIRRO
-    // =========================
+    // ====================================
     if (estado.etapa === "filtro_bairro") {
       const bairroOriginal = text;
       const bairro = normalizar(text);
@@ -154,8 +196,10 @@ module.exports = async (client, message) => {
       );
 
       if (!providers.length) {
-        estado.etapa = "menu";
-        return message.reply("❌ Nenhum encontrado\nDigite /menu");
+        estado.etapa = "inicio";
+        return message.reply(
+          "❌ Nenhum prestador encontrado.\nDigite *menu*."
+        );
       }
 
       estado.providers = providers;
@@ -163,55 +207,51 @@ module.exports = async (client, message) => {
 
       const lista = listarPagina(estado);
 
-      let msg = `🧵 *${estado.servico.toUpperCase()}*\n`;
+      let msg = `🔎 *${estado.servico.toUpperCase()}*\n`;
       msg += `📍 ${bairroOriginal}\n\n`;
 
       lista.forEach((p) => {
         const total = ratingService.getQuantidadeAvaliacoes(p.id);
-        const link = gerarLinkWhatsApp(p.telefone, p.nome, estado.servico);
+        const link = gerarLinkWhatsApp(p.telefone, p.nome);
 
-        msg += `━━━━━━━━━━━━━━━
-👤 *${p.nome}*
+        msg += `👤 *${p.nome}*
 📍 ${p.bairro}
 ⭐ ${p.media ? p.media.toFixed(1) : "0.0"} (${total})
-📲 ${link}
+📲 ${gerarLinkSuporte()}
 ━━━━━━━━━━━━━━━
 
 `;
       });
 
-      msg += "1 - Avaliar\n9 - Próximo\n0 - Menu";
+      msg += "Digite:\n";
+      msg += "proximo - Mais resultados\n";
+      msg += "avaliar - Avaliar prestador\n";
+      msg += "menu - Voltar";
 
       estado.etapa = "lista_prestadores";
 
       return message.reply(msg);
     }
 
-    // =========================
+    // ====================================
     // LISTA PRESTADORES
-    // =========================
+    // ====================================
     if (estado.etapa === "lista_prestadores") {
-
-      if (text === "0") {
-        estado.etapa = "menu";
-        return message.reply("Digite /menu");
-      }
-
-      if (text === "9") {
+      if (texto === "proximo") {
         estado.pagina++;
 
         const lista = listarPagina(estado);
 
         if (!lista.length) {
           estado.pagina--;
-          return message.reply("⚠️ Não há mais resultados");
+          return message.reply("⚠️ Não há mais resultados.");
         }
 
-        let msg = `🧵 *${estado.servico.toUpperCase()}*\n\n`;
+        let msg = `🔎 *${estado.servico.toUpperCase()}*\n\n`;
 
         lista.forEach((p) => {
           const total = ratingService.getQuantidadeAvaliacoes(p.id);
-          const link = gerarLinkWhatsApp(p.telefone, p.nome, estado.servico);
+          const link = gerarLinkWhatsApp(p.telefone, p.nome);
 
           msg += `━━━━━━━━━━━━━━━
 👤 *${p.nome}*
@@ -223,15 +263,15 @@ module.exports = async (client, message) => {
 `;
         });
 
-        msg += "1 - Avaliar\n9 - Próximo\n0 - Menu";
+        msg += "Digite:\nproximo\navaliar\nmenu";
 
         return message.reply(msg);
       }
 
-      if (text === "1") {
+      if (texto === "avaliar") {
         const lista = listarPagina(estado);
 
-        let msg = "Escolha o prestador:\n";
+        let msg = "⭐ Escolha o prestador:\n\n";
 
         lista.forEach((p, i) => {
           msg += `${i + 1} - ${p.nome}\n`;
@@ -240,33 +280,59 @@ module.exports = async (client, message) => {
         estado.etapa = "escolher_prestador";
         return message.reply(msg);
       }
+
+      return message.reply(
+        "Digite *proximo*, *avaliar* ou *menu*."
+      );
     }
 
-    // =========================
+    // ====================================
     // ESCOLHER PRESTADOR
-    // =========================
+    // ====================================
     if (estado.etapa === "escolher_prestador") {
       const lista = listarPagina(estado);
       const index = parseInt(text) - 1;
 
       if (!lista[index]) {
-        return message.reply("❌ Opção inválida");
+        return message.reply("❌ Opção inválida.");
       }
 
       estado.prestador = lista[index];
-      estado.etapa = "avaliar";
+      estado.etapa = "avaliar_nota";
 
-      return message.reply("Nota de 1 a 5 ⭐");
+      return message.reply(
+        `⭐ Nota para ${estado.prestador.nome} (1 a 5):`
+      );
     }
 
-    // =========================
-    // AVALIAR
-    // =========================
-    if (estado.etapa === "avaliar") {
+    // ====================================
+    // AVALIAR BUSCA
+    // ====================================
+    if (estado.etapa === "avaliar_busca") {
+      const servico = detectarServico(text);
+
+      if (!servico) {
+        return message.reply(
+          "❌ Serviço não encontrado.\nDigite novamente."
+        );
+      }
+
+      estado.servico = servico;
+      estado.etapa = "filtro_bairro";
+
+      return message.reply(
+        `📍 Qual bairro do prestador de *${servico}*?`
+      );
+    }
+
+    // ====================================
+    // AVALIAR NOTA
+    // ====================================
+    if (estado.etapa === "avaliar_nota") {
       const nota = parseInt(text);
 
       if (nota < 1 || nota > 5) {
-        return message.reply("Nota inválida");
+        return message.reply("❌ Nota inválida.");
       }
 
       const pode = ratingService.podeAvaliar(
@@ -275,8 +341,10 @@ module.exports = async (client, message) => {
       );
 
       if (!pode) {
-        estado.etapa = "menu";
-        return message.reply("⚠️ Já avaliou\nDigite /menu");
+        estado.etapa = "inicio";
+        return message.reply(
+          "⚠️ Você já avaliou este mês.\nDigite *menu*."
+        );
       }
 
       ratingService.salvarAvaliacao(
@@ -285,42 +353,47 @@ module.exports = async (client, message) => {
         nota
       );
 
-      estado.etapa = "menu";
+      estado.etapa = "inicio";
 
-      return message.reply("✅ Avaliado!\nDigite /menu");
+      return message.reply(
+        "✅ Avaliação registrada!\nDigite *menu*."
+      );
     }
 
-    // =========================
+    // ====================================
     // CADASTRO
-    // =========================
+    // ====================================
     if (estado.etapa === "cad_servico") {
-      const services = serviceService.getAllServices();
-      const index = parseInt(text) - 1;
+      const servico = detectarServico(text);
 
-      if (!services[index]) {
-        return message.reply("❌ Serviço inválido");
+      if (!servico) {
+        return message.reply(
+          "❌ Serviço inválido.\nDigite novamente."
+        );
       }
 
-      estado.novo = { servico: services[index] };
+      estado.novo = { servico };
       estado.etapa = "cad_nome";
 
-      return message.reply("Nome:");
+      return message.reply("Digite seu nome:");
     }
 
     if (estado.etapa === "cad_nome") {
-      estado.novo.nome = message.body;
+      estado.novo.nome = text;
       estado.etapa = "cad_telefone";
-      return message.reply("Telefone:");
+
+      return message.reply("Digite seu telefone:");
     }
 
     if (estado.etapa === "cad_telefone") {
-      estado.novo.telefone = message.body;
+      estado.novo.telefone = text;
       estado.etapa = "cad_bairro";
-      return message.reply("Bairro:");
+
+      return message.reply("Digite seu bairro:");
     }
 
     if (estado.etapa === "cad_bairro") {
-      estado.novo.bairro = message.body;
+      estado.novo.bairro = text;
 
       const result = providerService.salvarProvider(
         estado.novo.servico,
@@ -332,22 +405,24 @@ module.exports = async (client, message) => {
         }
       );
 
-      estado.etapa = "menu";
+      estado.etapa = "inicio";
 
       if (result?.erro) {
-        return message.reply(result.mensagem);
+        return message.reply("❌ " + result.mensagem);
       }
 
-      return message.reply("✅ Cadastrado!\nDigite /menu");
+      return message.reply(
+        "✅ Cadastro realizado com sucesso!\nDigite *menu*."
+      );
     }
 
-    // =========================
+    // ====================================
     // FALLBACK
-    // =========================
-    return message.reply("❌ Não entendi\nDigite /menu");
+    // ====================================
+    return message.reply(menuPrincipal());
 
   } catch (err) {
     console.error("ERRO NO BOT:", err);
-    return message.reply("⚠️ Erro interno");
+    return message.reply("⚠️ Erro interno.");
   }
 };

@@ -1,13 +1,13 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
-const handleMessage = require("./messageHandler");
-const { isGroupMessage, isBotMessage } = require('./regras');
+
+const messageHandler = require("./messageHandler");
 
 const client = new Client({
-  authStrategy: new LocalAuth(), // 👈 ISSO AQUI É O SEGREDO
+  authStrategy: new LocalAuth()
 });
 
-client.on("qr", (qr) => {
+client.on("qr", qr => {
   qrcode.generate(qr, { small: true });
 });
 
@@ -16,14 +16,25 @@ client.on("ready", () => {
 });
 
 client.on("message", async (message) => {
-  console.log(`📩 Mensagem recebida de ${message.from}: ${message.body}`);
- 
-  if (message.fromMe) return;
-  if (isGroupMessage(message)) return;
-  if (isBotMessage(message)) return;
-  if (message.from.endsWith('@broadcast')) return;
+  try {
+    const id = message.from || "";
 
-  await handleMessage(client, message);
+    console.log("📩 Mensagem recebida de:", id);
+
+    // ignorar sistema
+    if (message.fromMe) return;
+    if (id.includes("status@broadcast")) return;
+    if (id.includes("@newsletter")) return;
+    if (id.endsWith("@g.us")) return;
+    //if (id.endsWith("@lid")) return; // opcional
+
+    if (!message.body?.trim()) return;
+
+    await messageHandler(client, message);
+
+  } catch (error) {
+    console.log("Erro:", error.message);
+  }
 });
 
 client.initialize();
