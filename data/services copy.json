@@ -1,7 +1,13 @@
 {
-  "tecido": [],
+  "fabricantes": [],
+  "faccao": [],
+  "lavanderia": [],
+  "estamparia": [],
+  "frete": [],
+  "costureiras": [],
   "modelagem": [],
-  "corte": [],
+  "corte jeans": [],
+  "corte outros": [],
   "frente": [],
   "traseira": [],
   "bolso": [],
@@ -9,6 +15,7 @@
   "caseado": [],
   "cabecinha": [],
   "elastico": [],
+  "cós": [],
   "pelo": [],
   "aprontamento": []
 }
