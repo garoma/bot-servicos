@@ -20,7 +20,7 @@ function gerarLinkWhatsApp(telefone, nome) {
   const numero = telefone.replace(/\D/g, "");
 
   const mensagem = encodeURIComponent(
-    `Olá ${nome}, encontrei seu contato pelo ChatBot de Serviços de Caruaru.`
+    `Olá ${nome}, encontrei seu contato no *BuscaCaruaru*`
   );
 
   return `https://wa.me/55${numero}?text=${mensagem}`;
@@ -45,15 +45,15 @@ function detectarServico(texto) {
 
 function menuPrincipal() {
   return `
-👋 Olá! Sou o assistente virtual do *ChatBot de Serviços de Caruaru*.
+👋 Olá! Sou o assistente virtual do *BuscaCaruaru* seu ChatBot de Serviços de Caruaru*.
 
 Como posso ajudar?
 
-🔎 Buscar serviço
-📝 Me cadastrar
+🔎 Encontrar profissionais
+📝 Cadastrar meu serviço
 ⭐ Avaliar prestador
-📋 Ver serviços
-💬 Suporte
+📋 Ver categorias
+💬 Falar com suporte
 
 Digite normalmente 😊
 Ex: "quero frete"
@@ -119,6 +119,22 @@ module.exports = async (client, message) => {
     // ETAPA INICIAL
     // ====================================
     if (estado.etapa === "inicio") {
+      // buscar serviço
+      if (
+        texto.includes("buscar servico") ||
+        texto.includes("buscar serviço") ||
+        texto.includes("procurar servico") ||
+        texto.includes("procurar serviço") ||
+        texto.includes("achar servico") ||
+        texto.includes("achar serviço")
+      ) {
+        estado.etapa = "buscar_servico";
+        return message.reply(
+          "🔎 Qual serviço você procura?\n\n" +
+          listarServicosTexto()
+        );
+      }      
+
       // suporte
       if (
         texto.includes("suporte") ||
@@ -175,6 +191,24 @@ module.exports = async (client, message) => {
       return message.reply(menuPrincipal());
     }
 
+    if (estado.etapa === "buscar_servico") {
+      const servico = detectarServico(text);
+
+      if (!servico) {
+        return message.reply(
+          "❌ Serviço não encontrado.\nDigite novamente.\n\n" +
+          listarServicosTexto()
+        );
+      }
+
+      estado.servico = servico;
+      estado.etapa = "filtro_bairro";
+
+      return message.reply(
+        `📍 Qual bairro deseja buscar *${servico}*?\nDigite o bairro ou *todos*.`
+      );
+    }
+
     // ====================================
     // FILTRO BAIRRO
     // ====================================
@@ -217,7 +251,7 @@ module.exports = async (client, message) => {
         msg += `👤 *${p.nome}*
 📍 ${p.bairro}
 ⭐ ${p.media ? p.media.toFixed(1) : "0.0"} (${total})
-📲 ${gerarLinkSuporte()}
+📲 ${link}
 ━━━━━━━━━━━━━━━
 
 `;
