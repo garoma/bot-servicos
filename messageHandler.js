@@ -23,7 +23,8 @@ function gerarLinkWhatsApp(telefone, nome) {
     `Olá ${nome}, encontrei seu contato no *BuscaCaruaru*`
   );
 
-  return `https://wa.me/55${numero}?text=${mensagem}`;
+  //return `https://wa.me/55${numero}?text=${mensagem}`;
+  return `https://wa.me/55${numero}`;
 }
 
 function gerarLinkSuporte() {
