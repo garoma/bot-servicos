@@ -103,8 +103,10 @@ cadastrar
 avaliar
 suporte
 
-💬 Se tiver dificuldade, digite *suporte*
-💬 digite *categorias* para ver todos os serviços*
+💬 Se tiver dificuldade, digite *suporte*.
+💬 Digite *categorias* para ver todos os serviços*.
+💬 Digite *menu* para acessar o menu principal.
+💬 Digite *cadastrar* para cadastrar seu serviço.
 `;
 }
 
