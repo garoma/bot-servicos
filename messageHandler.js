@@ -104,6 +104,7 @@ avaliar
 suporte
 
 💬 Se tiver dificuldade, digite *suporte*
+💬 digite *categorias* para ver todos os serviços*
 `;
 }
 
