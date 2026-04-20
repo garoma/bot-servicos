@@ -306,10 +306,10 @@ module.exports = async (client, message) => {
       if (texto === "avaliar") {
         const lista = listarPagina(estado);
 
-        let msg = "⭐ Escolha o prestador:\n\n";
+        let msg = "⭐ Digite o nome do prestador que deseja avaliar:\n\n";
 
-        lista.forEach((p, i) => {
-          msg += `${i + 1} - ${p.nome}\n`;
+        lista.forEach((p) => {
+          msg += `• ${p.nome}\n`;
         });
 
         estado.etapa = "escolher_prestador";
