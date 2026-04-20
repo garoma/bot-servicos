@@ -4,6 +4,7 @@ const ratingService = require("./services/ratingService");
 const leadService = require("./services/leadService");
 
 const estados = {};
+const SUPORTE = "5581992155410@c.us";
 
 // ====================================
 // UTIL
@@ -16,19 +17,33 @@ function normalizar(texto = "") {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function gerarLinkWhatsApp(telefone, nome) {
+function gerarLinkWhatsApp(telefone) {
   const numero = telefone.replace(/\D/g, "");
-
-  const mensagem = encodeURIComponent(
-    `Olá ${nome}, encontrei seu contato no *BuscaCaruaru*`
-  );
-
-  //return `https://wa.me/55${numero}?text=${mensagem}`;
   return `https://wa.me/55${numero}`;
 }
 
 function gerarLinkSuporte() {
   return "https://wa.me/5581992155410";
+}
+
+async function enviarSuporte(client, message, textoErro) {
+  await message.reply(
+`⚠️ Não consegui concluir sua solicitação.
+
+💬 Suporte humano:
+📞 (81) 99215-5410
+${gerarLinkSuporte()}
+
+Digite *menu* para voltar.`
+  );
+
+  await client.sendMessage(
+    SUPORTE,
+`📩 Usuário com dificuldade
+
+Número: ${message.from}
+Mensagem: ${textoErro}`
+  );
 }
 
 function listarPagina(estado) {
@@ -41,23 +56,54 @@ function detectarServico(texto) {
   const services = serviceService.getAllServices();
   const t = normalizar(texto);
 
-  return services.find((s) => t.includes(normalizar(s)));
+  return services.find((s) =>
+    t.includes(normalizar(s))
+  );
 }
 
+// ====================================
+// MENU PRINCIPAL
+// ====================================
 function menuPrincipal() {
   return `
-👋 Olá! Sou o assistente virtual do *BuscaCaruaru* seu ChatBot de Serviços de Caruaru*.
+🚀 *BUSCACARUARU - CHAT DE SERVIÇOS*
 
-Como posso ajudar?
+Encontre profissionais de forma rápida em Caruaru e região.
 
-🔎 Encontrar profissionais
-📝 Cadastrar meu serviço
-⭐ Avaliar prestador
-📋 Ver categorias
-💬 Falar com suporte
+✅ Costureiras
+✅ Travete
+✅ Facção
+✅ Frete
+✅ Bordado
+✅ Frente / Traseira
+✅ Corte / Cós
+✅ Fabricantes
+✅ E muito mais
 
-Digite normalmente 😊
-Ex: "quero frete"
+🎯 Benefícios:
+
+✔ Contato direto no WhatsApp
+✔ Prestadores avaliados
+✔ Busca por bairro
+✔ Cadastro grátis para trabalhar
+✔ Mais clientes para você
+
+📲 Digite o que precisa normalmente:
+
+Ex:
+frete
+travete
+costureira
+quero facção
+
+📋 Comandos:
+menu
+categorias
+cadastrar
+avaliar
+suporte
+
+💬 Se tiver dificuldade, digite *suporte*
 `;
 }
 
@@ -71,6 +117,7 @@ function listarServicosTexto() {
   });
 
   msg += "\nDigite o nome do serviço desejado.";
+  msg += "\nSe precisar de ajuda digite *suporte*.";
 
   return msg;
 }
@@ -85,234 +132,223 @@ module.exports = async (client, message) => {
     const texto = normalizar(text);
 
     if (!estados[user]) {
-      estados[user] = { etapa: "inicio" };
+      estados[user] = {
+        etapa: "inicio",
+        erros: 0
+      };
     }
 
     const estado = estados[user];
 
-    console.log("USER:", user);
-    console.log("ETAPA:", estado.etapa);
-    console.log("MSG:", text);
-
     // ====================================
-    // COMANDOS GLOBAIS
+    // MENU GLOBAL
     // ====================================
     const gatilhosMenu = [
       "oi",
       "ola",
+      "olá",
       "bom dia",
       "boa tarde",
       "boa noite",
       "menu",
       "/menu",
       "inicio",
-      "sair",
       "voltar",
       "cancelar"
     ];
 
     if (gatilhosMenu.includes(texto)) {
       estado.etapa = "inicio";
+      estado.erros = 0;
       return message.reply(menuPrincipal());
     }
 
     // ====================================
-    // ETAPA INICIAL
+    // SUPORTE GLOBAL
+    // ====================================
+    if (
+      texto.includes("suporte") ||
+      texto.includes("ajuda") ||
+      texto.includes("duvida") ||
+      texto.includes("dúvida")
+    ) {
+      return message.reply(
+`💬 *SUPORTE BUSCACARUARU*
+
+Fale conosco:
+📞 (81) 99215-5410
+${gerarLinkSuporte()}
+
+Explique sua dúvida que ajudamos você.`
+      );
+    }
+
+    // ====================================
+    // INICIO
     // ====================================
     if (estado.etapa === "inicio") {
-      // buscar serviço
-      if (
-        texto.includes("buscar servico") ||
-        texto.includes("buscar serviço") ||
-        texto.includes("procurar servico") ||
-        texto.includes("procurar serviço") ||
-        texto.includes("achar servico") ||
-        texto.includes("achar serviço")
-      ) {
-        estado.etapa = "buscar_servico";
-        return message.reply(
-          "🔎 Qual serviço você procura?\n\n" +
-          listarServicosTexto()
-        );
-      }      
-
-      // suporte
-      if (
-        texto.includes("suporte") ||
-        texto.includes("duvida") ||
-        texto.includes("ajuda")
-      ) {
-        return message.reply(
-          `💬 Fale conosco:\n${gerarLinkSuporte()}`
-        );
-      }
 
       // cadastro
       if (
         texto.includes("cadastro") ||
-        texto.includes("cadastrar") ||
-        texto.includes("me cadastrar")
+        texto.includes("cadastrar")
       ) {
         estado.etapa = "cad_servico";
+
         return message.reply(
-          "📝 Vamos cadastrar você.\n\nQual serviço você presta?\n\n" +
-          listarServicosTexto()
+`📝 Vamos cadastrar seu serviço.
+
+Qual serviço você presta?
+
+${listarServicosTexto()}`
         );
       }
 
       // avaliar
       if (texto.includes("avaliar")) {
         estado.etapa = "avaliar_busca";
+
         return message.reply(
-          "⭐ Qual serviço do prestador que deseja avaliar?\nEx: fabricante, frete..."
+          "⭐ Qual serviço do prestador que deseja avaliar?"
         );
       }
 
-      // ver lista
+      // categorias
       if (
+        texto.includes("categorias") ||
         texto.includes("lista") ||
         texto.includes("servicos") ||
-        texto.includes("categorias")
+        texto.includes("serviços")
       ) {
         return message.reply(listarServicosTexto());
       }
 
       // detectar serviço direto
-      const servicoDetectado = detectarServico(texto);
+      const servico = detectarServico(text);
 
-      if (servicoDetectado) {
-        estado.servico = servicoDetectado;
+      if (servico) {
+        estado.servico = servico;
         estado.etapa = "filtro_bairro";
 
         return message.reply(
-          `🔎 Você procura *${servicoDetectado}*.\n\nDigite o bairro desejado ou *todos*.`
+`📍 Você procura *${servico}*
+
+Digite o bairro desejado ou *todos*.`
         );
       }
 
       return message.reply(menuPrincipal());
     }
 
-    if (estado.etapa === "buscar_servico") {
-      const servico = detectarServico(text);
-
-      if (!servico) {
-        return message.reply(
-          "❌ Serviço não encontrado.\nDigite novamente.\n\n" +
-          listarServicosTexto()
-        );
-      }
-
-      estado.servico = servico;
-      estado.etapa = "filtro_bairro";
-
-      return message.reply(
-        `📍 Qual bairro deseja buscar *${servico}*?\nDigite o bairro ou *todos*.`
-      );
-    }
-
     // ====================================
-    // FILTRO BAIRRO
+    // BUSCAR BAIRRO
     // ====================================
     if (estado.etapa === "filtro_bairro") {
-      const bairroOriginal = text;
-      const bairro = normalizar(text);
 
-      estado.bairro = bairro;
+      estado.bairro = text;
 
       leadService.salvarLead({
         user,
         servico: estado.servico,
-        bairro: bairroOriginal
+        bairro: text
       });
 
-      const providers = providerService.getProvidersByService(
-        estado.servico,
-        bairro
-      );
+      const providers =
+        providerService.getProvidersByService(
+          estado.servico,
+          normalizar(text)
+        );
 
       if (!providers.length) {
         estado.etapa = "inicio";
+
         return message.reply(
-          "❌ Nenhum prestador encontrado.\nDigite *menu*."
+`❌ Nenhum prestador encontrado.
+
+Digite outro bairro ou *menu*
+Se precisar digite *suporte*.`
         );
       }
 
       estado.providers = providers;
       estado.pagina = 0;
+      estado.etapa = "lista_prestadores";
 
       const lista = listarPagina(estado);
 
       let msg = `🔎 *${estado.servico.toUpperCase()}*\n`;
-      msg += `📍 ${bairroOriginal}\n\n`;
+      msg += `📍 ${text}\n\n`;
 
-      lista.forEach((p) => {
-        const total = ratingService.getQuantidadeAvaliacoes(p.id);
-        const link = gerarLinkWhatsApp(p.telefone, p.nome);
+      lista.forEach((p, i) => {
+        const total =
+          ratingService.getQuantidadeAvaliacoes(
+            p.id
+          );
 
-        msg += `👤 *${p.nome}*
+        msg += `${i + 1}. 👤 *${p.nome}*
 📍 ${p.bairro}
 ⭐ ${p.media ? p.media.toFixed(1) : "0.0"} (${total})
-📲 ${link}
+📲 ${gerarLinkWhatsApp(p.telefone)}
+
 ━━━━━━━━━━━━━━━
 
 `;
       });
 
-      msg += "Digite:\n";
-      msg += "proximo - Mais resultados\n";
-      msg += "avaliar - Avaliar prestador\n";
-      msg += "menu - Voltar";
-
-      estado.etapa = "lista_prestadores";
+      msg += `Digite:
+proximo
+avaliar
+menu`;
 
       return message.reply(msg);
     }
 
     // ====================================
-    // LISTA PRESTADORES
+    // LISTA
     // ====================================
     if (estado.etapa === "lista_prestadores") {
+
       if (texto === "proximo") {
+
         estado.pagina++;
 
         const lista = listarPagina(estado);
 
         if (!lista.length) {
           estado.pagina--;
-          return message.reply("⚠️ Não há mais resultados.");
+          return message.reply(
+            "⚠️ Não há mais resultados."
+          );
         }
 
-        let msg = `🔎 *${estado.servico.toUpperCase()}*\n\n`;
+        let msg = "";
 
-        lista.forEach((p) => {
-          const total = ratingService.getQuantidadeAvaliacoes(p.id);
-          const link = gerarLinkWhatsApp(p.telefone, p.nome);
-
-          msg += `━━━━━━━━━━━━━━━
-👤 *${p.nome}*
+        lista.forEach((p, i) => {
+          msg += `${i + 1}. ${p.nome}
 📍 ${p.bairro}
-⭐ ${p.media ? p.media.toFixed(1) : "0.0"} (${total})
-📲 ${link}
-━━━━━━━━━━━━━━━
+📲 ${gerarLinkWhatsApp(p.telefone)}
 
 `;
         });
 
-        msg += "Digite:\nproximo\navaliar\nmenu";
+        msg += "Digite proximo / avaliar / menu";
 
         return message.reply(msg);
       }
 
       if (texto === "avaliar") {
+
         const lista = listarPagina(estado);
 
-        let msg = "⭐ Digite o nome do prestador que deseja avaliar:\n\n";
+        let msg =
+          "⭐ Digite o número do prestador:\n\n";
 
-        lista.forEach((p) => {
-          msg += `• ${p.nome}\n`;
+        lista.forEach((p, i) => {
+          msg += `${i + 1}. ${p.nome}\n`;
         });
 
         estado.etapa = "escolher_prestador";
+
         return message.reply(msg);
       }
 
@@ -325,38 +361,27 @@ module.exports = async (client, message) => {
     // ESCOLHER PRESTADOR
     // ====================================
     if (estado.etapa === "escolher_prestador") {
+
       const lista = listarPagina(estado);
       const index = parseInt(text) - 1;
 
       if (!lista[index]) {
-        return message.reply("❌ Opção inválida.");
+        await enviarSuporte(
+          client,
+          message,
+          text
+        );
+
+        return;
       }
 
       estado.prestador = lista[index];
       estado.etapa = "avaliar_nota";
 
       return message.reply(
-        `⭐ Nota para ${estado.prestador.nome} (1 a 5):`
-      );
-    }
+`⭐ Nota para ${estado.prestador.nome}
 
-    // ====================================
-    // AVALIAR BUSCA
-    // ====================================
-    if (estado.etapa === "avaliar_busca") {
-      const servico = detectarServico(text);
-
-      if (!servico) {
-        return message.reply(
-          "❌ Serviço não encontrado.\nDigite novamente."
-        );
-      }
-
-      estado.servico = servico;
-      estado.etapa = "filtro_bairro";
-
-      return message.reply(
-        `📍 Qual bairro do prestador de *${servico}*?`
+Digite de 1 até 5`
       );
     }
 
@@ -364,21 +389,12 @@ module.exports = async (client, message) => {
     // AVALIAR NOTA
     // ====================================
     if (estado.etapa === "avaliar_nota") {
+
       const nota = parseInt(text);
 
       if (nota < 1 || nota > 5) {
-        return message.reply("❌ Nota inválida.");
-      }
-
-      const pode = ratingService.podeAvaliar(
-        user,
-        estado.prestador.id
-      );
-
-      if (!pode) {
-        estado.etapa = "inicio";
         return message.reply(
-          "⚠️ Você já avaliou este mês.\nDigite *menu*."
+          "❌ Nota inválida. Digite de 1 a 5."
         );
       }
 
@@ -391,7 +407,9 @@ module.exports = async (client, message) => {
       estado.etapa = "inicio";
 
       return message.reply(
-        "✅ Avaliação registrada!\nDigite *menu*."
+`✅ Avaliação registrada.
+
+Digite *menu*`
       );
     }
 
@@ -399,65 +417,94 @@ module.exports = async (client, message) => {
     // CADASTRO
     // ====================================
     if (estado.etapa === "cad_servico") {
+
       const servico = detectarServico(text);
 
       if (!servico) {
         return message.reply(
-          "❌ Serviço inválido.\nDigite novamente."
+`❌ Serviço inválido.
+
+Digite novamente ou digite *suporte*.`
         );
       }
 
       estado.novo = { servico };
       estado.etapa = "cad_nome";
 
-      return message.reply("Digite seu nome:");
+      return message.reply(
+        "👤 Digite seu nome:"
+      );
     }
 
     if (estado.etapa === "cad_nome") {
       estado.novo.nome = text;
       estado.etapa = "cad_telefone";
 
-      return message.reply("Digite seu telefone:");
+      return message.reply(
+        "📞 Digite seu telefone:"
+      );
     }
 
     if (estado.etapa === "cad_telefone") {
       estado.novo.telefone = text;
       estado.etapa = "cad_bairro";
 
-      return message.reply("Digite seu bairro:");
+      return message.reply(
+        "📍 Digite seu bairro:"
+      );
     }
 
     if (estado.etapa === "cad_bairro") {
+
       estado.novo.bairro = text;
 
-      const result = providerService.salvarProvider(
-        estado.novo.servico,
-        {
-          nome: estado.novo.nome,
-          telefone: estado.novo.telefone,
-          bairro: estado.novo.bairro,
-          descricao: ""
-        }
-      );
+      const result =
+        providerService.salvarProvider(
+          estado.novo.servico,
+          {
+            nome: estado.novo.nome,
+            telefone: estado.novo.telefone,
+            bairro: estado.novo.bairro,
+            descricao: ""
+          }
+        );
 
       estado.etapa = "inicio";
 
       if (result?.erro) {
-        return message.reply("❌ " + result.mensagem);
+        return message.reply(
+`❌ ${result.mensagem}
+
+Digite *suporte* se precisar.`
+        );
       }
 
       return message.reply(
-        "✅ Cadastro realizado com sucesso!\nDigite *menu*."
+`✅ Cadastro realizado com sucesso!
+
+Agora clientes podem encontrar você.
+
+Digite *menu*`
       );
     }
 
     // ====================================
     // FALLBACK
     // ====================================
-    return message.reply(menuPrincipal());
+    return message.reply(
+`❌ Não entendi sua mensagem.
+
+Digite *menu* para opções
+ou *suporte* para ajuda.`
+    );
 
   } catch (err) {
-    console.error("ERRO NO BOT:", err);
-    return message.reply("⚠️ Erro interno.");
+    console.error(err);
+
+    return message.reply(
+`⚠️ Erro interno no sistema.
+
+Digite *menu* ou *suporte*.`
+    );
   }
 };
